@@ -11,6 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -35,6 +36,8 @@ function Mentors() {
   const [singleMentor, setSingleMentor] = useState();
   const [mentors, setMentors] = useState([]);
   const [open, setOpen] = React.useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [mentorDialog, setMentorDialog] = React.useState(false);
 
   const handleClickOpen = (e, m) => {
     setFormData(m);
@@ -87,6 +90,22 @@ function Mentors() {
   const onChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  const getMentor = async (e, m) => {
+    try {
+      const taskResponse = await axios.get(`/api/task/${m._id}`);
+      const mentorResponse = await axios.get(`/api/mentor/${m._id}`);
+
+      setTasks(taskResponse.data.data);
+      setSingleMentor(mentorResponse.data.data);
+
+      setMentorDialog(true);
+      return;
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  };
+
   const updateMentor = async id => {
     try {
       console.log(`ID: ${id}`);
@@ -114,7 +133,10 @@ function Mentors() {
           {mentors.map(mentor => {
             return (
               <ListItem divider key={mentor._id}>
-                <ListItemText primary={mentor.name} />
+                <ListItemText
+                  primary={mentor.name}
+                  onClick={e => getMentor(e, mentor)}
+                />
                 <Button
                   variant='outlined'
                   onClick={e => {
@@ -203,6 +225,44 @@ function Mentors() {
               Update
             </Button>
           </DialogActions>
+        </Dialog>
+
+        <Dialog
+          onClose={() => setMentorDialog(false)}
+          aria-labelledby='simple-dialog-title'
+          open={mentorDialog}
+        >
+          <DialogTitle id='simple-dialog-title'>Mentor Info</DialogTitle>
+          {singleMentor ? (
+            <DialogContentText>
+              <span>Name: {singleMentor.name}</span>
+              <br />
+              <span>Email: {singleMentor.email}</span>
+              <br />
+              <span>Mobile: {singleMentor.mobile}</span>
+              <br />
+              <span>Date Of Birth: {singleMentor.dateOfBirth}</span>
+              <br />
+              <span>Gender: {singleMentor.gender}</span>
+              <br />
+            </DialogContentText>
+          ) : (
+            <div></div>
+          )}
+          <h4>TASKS</h4>
+          <List
+            component='nav'
+            className={classes.root}
+            aria-label='mailbox folders'
+          >
+            {tasks.map(task => {
+              return (
+                <ListItem divider key={task._id}>
+                  <ListItemText primary={task.task} />
+                </ListItem>
+              );
+            })}
+          </List>
         </Dialog>
       </div>
     );

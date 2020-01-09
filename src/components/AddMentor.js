@@ -48,7 +48,7 @@ function AddMentor() {
     try {
       const added = await axios.post('/api/mentor', formData);
       if (added) {
-        console.log(`Added ${added.data.data.name}`);
+        console.log(`Added ${JSON.stringify(added.data.data)}`);
         return;
       }
       return;

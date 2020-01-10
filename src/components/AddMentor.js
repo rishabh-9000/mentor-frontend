@@ -8,6 +8,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant='filled' {...props} />;
+}
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -31,6 +37,8 @@ function AddMentor() {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
+  const [isMentorAdded, setIsMentorAdded] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -47,8 +55,9 @@ function AddMentor() {
   const addMentor = async () => {
     try {
       const added = await axios.post('/api/mentor', formData);
-      if (added) {
-        console.log(`Added ${JSON.stringify(added.data.data)}`);
+      if (added.data.data.id) {
+        setIsMentorAdded(true);
+        console.log(`Added ${added.data.data.id}`);
         return;
       }
       return;
@@ -111,6 +120,16 @@ function AddMentor() {
       <Button variant='outlined' color='primary' onClick={addMentor}>
         Add
       </Button>
+
+      <Snackbar
+        open={isMentorAdded}
+        autoHideDuration={3000}
+        onClose={() => setIsMentorAdded(false)}
+      >
+        <Alert onClose={() => setIsMentorAdded(false)} severity='success'>
+          Mentor Added
+        </Alert>
+      </Snackbar>
     </form>
   );
 }

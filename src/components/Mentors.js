@@ -136,6 +136,7 @@ function Mentors() {
                 <ListItemText
                   primary={mentor.name}
                   onClick={e => getMentor(e, mentor)}
+                  style={{ cursor: 'pointer' }}
                 />
                 <Button
                   variant='outlined'

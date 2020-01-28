@@ -26,7 +26,7 @@ Clone the project
 ```bash
 git clone https://github.com/rishabh-9000/mentor-frontend.git
 
-cd expertrons-frontend
+cd mentor-frontend
 npm install
 npm start (To start development server)
 ```
